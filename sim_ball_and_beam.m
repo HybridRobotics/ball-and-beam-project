@@ -13,6 +13,11 @@ dt = 0.01;
 ode_func = @ode45;
 % print log for each timestep if true.
 verbose = false;
+% plot animation if true.
+plot_animation = true;
+% save animation to video if true.
+save_video = true;
+
 controller_handle = studentControllerInterface();
 u_saturation = 10;
 
@@ -124,6 +129,9 @@ title('Control Input History');
 tracking_error = get_tracking_error(ts, xs(1, :), ref_ps);
 control_cost = get_energy_cost(ts, us);
 safety_cost = get_safety_cost(ts, xs(1, :));
+if plot_animation
+    animate_ball_and_beam(ts, xs, ref_ps, save_video);
+end
 
 function print_log(t, x, u)
         fprintf("t: %.3f, \t x: ", t);
