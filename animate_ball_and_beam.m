@@ -58,7 +58,16 @@ end
             
         center_desired_x = (0.5 * L - ref_ps(i)) * cos(alpha) - ball_radius * sin(alpha);
         center_desired_y = (0.5 * L - ref_ps(i)) * sin(alpha) + ball_radius * cos(alpha);
-        draw_circle([center_desired_x, center_desired_y], ball_radius, 'desired');        
+        draw_circle([center_desired_x, center_desired_y], ball_radius, 'desired'); 
+        
+        servo_x = L-r_arm ; servo_y = -r_arm*1.5 ;
+        draw_circle([servo_x, servo_y], r_arm, 'desired'); 
+        hold on ;
+        scatter(servo_x, servo_y, 50, 'k'); 
+        scatter(servo_x+r_arm*cos(theta), servo_y+r_arm*sin(theta), 50, 'k') ;
+        scatter(L*cos(alpha), L*sin(alpha), 50, 'k') ;
+        line([servo_x+r_arm*cos(theta), L*cos(alpha)], [servo_y+r_arm*sin(theta), L*sin(alpha)],'Color', 'k', 'LineWidth', 1.5) ;
+        line([servo_x+r_arm*cos(theta), servo_x], [servo_y+r_arm*sin(theta), servo_y],'Color', 'k', 'LineWidth', 1.5) ;
         
         axis([-0.05, 0.45, -0.145, 0.145]) ;             
         title(title_str);
