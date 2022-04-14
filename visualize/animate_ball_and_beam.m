@@ -15,7 +15,13 @@ if nargin < 9
     dt_frame = 0.02; % 50 fps
 end
 
-	open_figure('size', [1600, 900], 'font_size', 18);
+    fig = figure();
+    % Set up font size.
+    set(fig, 'DefaultAxesFontSize', 16);
+    % Set up font name
+    set(fig, 'DefaultTextFontName', 'Times New Roman');
+    % Set up interpreter
+    set(fig, 'DefaultTextInterpreter', 'latex');
     dt = ts(2) - ts(1);
     if dt <= dt_frame
         down_sample_ratio = floor(dt_frame / dt);
