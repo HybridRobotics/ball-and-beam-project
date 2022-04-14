@@ -27,7 +27,7 @@ classdef studentControllerInterface < matlab.System
             %% Sample Controller: Simple Proportional Controller
             t_prev = obj.t_prev;
             % Extract reference trajectory at the current timestep.
-            [p_ball_ref, v_ball_ref] = get_ref_traj(t);
+            [p_ball_ref, v_ball_ref, a_ball_ref] = get_ref_traj(t);
             % Decide desired servo angle based on simple proportional feedback.
             k_p = 3;
             theta_d = - k_p * (p_ball - p_ball_ref);

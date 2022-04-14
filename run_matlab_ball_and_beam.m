@@ -1,4 +1,4 @@
-% close all
+close all
 clear all
 
 %% General Settings.
@@ -6,7 +6,7 @@ clear all
 x0 = [-0.19; 0.00; 0; 0];
 t0 = 0;
 % Simulation time.
-T = 30;
+T = 10;
 % Sampling time of the controller
 dt = 0.01;
 % ode function to use.
@@ -14,9 +14,9 @@ ode_func = @ode45;
 % print log for each timestep if true.
 verbose = false;
 % plot animation if true.
-plot_animation = true;
+plot_animation = false;
 % save animation to video if true.
-save_video = true;
+save_video = false;
 
 controller_handle = studentControllerInterface();
 u_saturation = 10;
@@ -75,62 +75,22 @@ theta_ds = [theta_ds, theta_d];
 if verbose
     print_log(t, x, u);    
 end
+ps = xs(1, :);
+thetas = xs(3, :);
 
-%% Plot state and control history.
+% Evaluate the score of the controller.
+score = get_controller_score(ts, ps, thetas, ref_ps, us);
+
+%% Plots
 % Plot states.
-fig = open_figure();
-subplot(4, 1, 1);
-plot(ts, 100 * xs(1, :), 'LineWidth', 1.5);
-hold on;
-plot(ts, 100 * ref_ps, '-.', 'LineWidth', 1.5);
-ylabel('$x_{ball} [cm]$');
-grid on;
-title('State History');
-
-
-subplot(4, 1, 2);
-plot(ts, 100 * xs(2, :), 'LineWidth', 1.5);
-hold on;
-plot(ts, 100 * ref_vs, '-.', 'LineWidth', 1.5);
-grid on;
-ylabel('$v_{ball} [cm / s]$');
-
-subplot(4, 1, 3);
-plot(ts, 180 * xs(3, :) / pi, 'LineWidth', 1.5);
-ylabel('$\theta$ [deg]');
-hold on;
-plot(ts, 180 * theta_ds / pi, 'r:', 'LineWidth', 1.5);
-
-
-subplot(4, 1, 4);
-plot(ts, 180 * xs(4, :) / pi, 'LineWidth', 1.5);
-ylabel('$\dot{\theta}$ [deg/s]');
-
+plot_states(ts, xs, ref_ps, ref_vs, theta_ds);
 % Plot output errors.
-fig = open_figure();
-subplot(2, 1, 1);
-plot(ts, (100 * abs(xs(1, :) - ref_ps)), 'LineWidth', 1.5);
-ylabel('$|x-x_d|$');
-title('Output error');
-
-subplot(2, 1, 2);
-plot(ts, (100 * abs(xs(2, :) - ref_vs)), 'LineWidth', 1.5);
-ylabel('$|v-v_d|$');
-    
-    
+plot_tracking_errors(ts, ps, ref_ps);        
 % Plot control input history.
-fig = open_figure();
-plot(ts, us, 'LineWidth', 1.5);
-ylabel('$u$ [V]');
-xlabel('$t$');
-grid on;    
-title('Control Input History');
+plot_controls(ts, us);
 
-tracking_error = get_tracking_error(ts, xs(1, :), ref_ps);
-control_cost = get_energy_cost(ts, us);
-safety_cost = get_safety_cost(ts, xs(1, :));
 if plot_animation
-    animate_ball_and_beam(ts, xs, ref_ps, save_video);
+    animate_ball_and_beam(ts, ps, thetas, ref_ps, save_video);
 end
 
 function print_log(t, x, u)

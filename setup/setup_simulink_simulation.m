@@ -12,3 +12,5 @@ clear;
 K = 10; % enter correct value
 tau = 0.1; % enter correct value
 K_bb = 0.82;
+
+
