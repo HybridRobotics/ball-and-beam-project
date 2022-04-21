@@ -1,4 +1,7 @@
 function plot_outputs(ts, ps, thetas, ref_ps, theta_ds)
+if nargin < 4
+    ref_ps = [];
+end
 
 if nargin < 5
     theta_ds = []; 
@@ -14,8 +17,10 @@ set(fig, 'DefaultTextInterpreter', 'latex');
 
 subplot(2, 1, 1);
 plot(ts, 100 * ps, 'LineWidth', 1.5);
-hold on;
-plot(ts, 100 * ref_ps, '-.', 'LineWidth', 1.5);
+if ~isempty(ref_ps)
+    hold on;
+    plot(ts, 100 * ref_ps, 'r:', 'LineWidth', 1.5);
+end
 ylabel('$z$ [cm]', 'Interpreter', 'latex');
 grid on;
 title('State History');
