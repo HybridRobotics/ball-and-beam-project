@@ -17,7 +17,7 @@ function score = get_controller_score(ts, ps, thetas, ref_ps, us)
         any(thetas(ts > 1) >= deg2rad(60)) || any(thetas(ts > 1) <= -deg2rad(60));
 
     weight_tracking = 1800;
-    weight_control_efficiency = 9;
+    weight_control_efficiency = 5;
     weight_safety = 10;
 
     fprintf('Average Tracking Error: %.4f \n', tracking_error);
