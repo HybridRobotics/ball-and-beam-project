@@ -6,7 +6,7 @@ if nargin < 6
     play_speed = 1.0;
 end
 if nargin < 7
-    title_str = " ";
+    title_str = ' ';
 end
 if nargin < 8
     t_final = ts(end);
@@ -26,7 +26,7 @@ end
     if dt <= dt_frame
         down_sample_ratio = floor(dt_frame / dt);
     else
-        error("dt_frame should not be smaller than dt");
+        error('dt_frame should not be smaller than dt');
     end
     frame_rate = dt * down_sample_ratio / play_speed;
 
@@ -38,7 +38,7 @@ end
         vout.FrameRate = 1/frame_rate;
         vout.open;
     end
-    title_str = strcat(title_str, " (play speed: x", num2str(play_speed, '%.2f'), ")");
+    title_str = strcat(title_str, ' (play speed: x', num2str(play_speed, '%.2f'), ')');
     
     for i =1:down_sample_ratio:length(ts) 
         if ts(i) > t_final 
@@ -111,7 +111,7 @@ elseif strcmp(type, 'unsafe')
 elseif strcmp(type, 'motor')
     h = plot(xunit, yunit, 'k-.', 'LineWidth', 1.5);
 else
-    error("Unknown type.");    
+    error('Unknown type.');    
 end
 hold off
 end

@@ -94,10 +94,10 @@ if plot_animation
 end
 
 function print_log(t, x, u)
-        fprintf("t: %.3f, \t x: ", t);
-        fprintf("%.2g, ", x);
-        fprintf("\t u: ");
-        fprintf("%.2g, ", u);
+        fprintf('t: %.3f, \t x: ', t);
+        fprintf('%.2g, ', x);
+        fprintf('\t u: ');
+        fprintf('%.2g, ', u);
         % Add custom log here.
-        fprintf("\n");
+        fprintf('\n');
 end
