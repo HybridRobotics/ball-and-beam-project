@@ -107,12 +107,12 @@ classdef studentControllerInterface < matlab.System
             p_ball_ref = p_ball_ref-L/2;
             p_ball = p_ball-L/2;
 
-            k = [1 4 6 4];
+            k = -30*[1 4 6 4];
 
             dxi = [p_ball,v_ball,alpha*sin(theta)+beta*p_ball*dtheta^2*cos(theta),alpha*dtheta*cos(theta)];
             e = dxi - [p_ball_ref,v_ball_ref,a_ball_ref,j_ball_ref];
 
-            u = -(alpha*dtheta*sin(theta)-s_ball_ref)/(alpha*cos(theta))-k*e';
+            u = (alpha*dtheta*sin(theta)+s_ball_ref+k*e')/(alpha*cos(theta));
             V_servo = (u*tau+dtheta)/K;
 
             %display(V_servo);
