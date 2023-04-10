@@ -92,9 +92,9 @@ plot_tracking_errors(ts, ps, ref_ps);
 % Plot control input history.
 plot_controls(ts, us);
 
-if plot_animation
-    animate_ball_and_beam(ts, ps, thetas, ref_ps, save_video);
-end
+ if plot_animation
+     animate_ball_and_beam(ts, ps, thetas, ref_ps, save_video);
+ end
 
 function print_log(t, x, u)
         fprintf('t: %.3f, \t x: ', t);
