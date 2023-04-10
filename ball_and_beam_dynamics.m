@@ -18,7 +18,7 @@ dx = zeros(4, 1);
 dx(1) = v_ball;
 dx(2) = a * sin(theta) - b * dtheta^2 * cos(theta)^2 + c * p_ball * dtheta^2 * cos(theta)^2;
 dx(3) = dtheta;
-K = 10;
-tau = 0.1;
+K = 1.5;
+tau = 0.025;
 dx(4) = (- dtheta + K * u) / tau; 
 end
