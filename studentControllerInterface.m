@@ -3,8 +3,9 @@ classdef studentControllerInterface < matlab.System
         %% You can add values that you want to store and updae while running your controller.
         % For more information of the supported data type, see
         % https://www.mathworks.com/help/simulink/ug/data-types-supported-by-simulink.html
-        t_prev = -1;
+        t_prev = 0;
         theta_d = 0;
+        V_prev = 0;
         x_obs= [-0.19; 0.00; 0; 0];
     end
     methods(Access = protected)
@@ -71,6 +72,7 @@ classdef studentControllerInterface < matlab.System
         %   V_servo: voltage to the servo input.        
             %% Sample Controller: Simple Proportional Controller
             t_prev = obj.t_prev;
+            %disp([t_prev,t]);
             % Extract reference trajectory at the current timestep.
             [p_ball_ref, v_ball_ref, a_ball_ref] = get_ref_traj(t);
             omega = 2 * pi / 10;
@@ -79,15 +81,15 @@ classdef studentControllerInterface < matlab.System
             
             %Extract the x_2 and x_4 from the observer 
             [t_obs_t, x_obs_t] = ode45( ...
-            @(t, x) ball_and_beam_observer(obj, t, x, obj.theta_d), ...
-            [max(t_prev,0), t+1e-8], obj.x_obs);
+            @(t, x) ball_and_beam_observer(obj, t, x, obj.V_prev), ...
+            [t_prev, t+1e-8], obj.x_obs);
 
-            
+           
             obj.x_obs = x_obs_t(end, :)';
 
             v_ball = obj.x_obs(2);
             dtheta = obj.x_obs(4);
-            
+            %display(x_obs_t);
 
             g = 9.81;
             r_arm = 0.0254;
@@ -112,7 +114,12 @@ classdef studentControllerInterface < matlab.System
 
             u = -(alpha*dtheta*sin(theta)-s_ball_ref)/(alpha*cos(theta))-k*e';
             V_servo = (u*tau+dtheta)/K;
-            display(V_servo);
+
+            %display(V_servo);
+
+            obj.t_prev = t;
+            obj.V_prev = V_servo;
+            
 % 
 %             A_t = zeros(4);
 %             B_t = [0; 0; 0; K/tau];
@@ -145,9 +152,10 @@ classdef studentControllerInterface < matlab.System
     methods(Access = public)
         % Used this for matlab simulation script. fill free to modify it as
         % however you want.
-        function [V_servo, theta_d] = stepController(obj, t, p_ball, theta)        
+        function [V_servo, theta_d,x_obs] = stepController(obj, t, p_ball, theta)        
             V_servo = stepImpl(obj, t, p_ball, theta);
             theta_d = obj.theta_d;
+            x_obs = obj.x_obs;
         end
     end
     
