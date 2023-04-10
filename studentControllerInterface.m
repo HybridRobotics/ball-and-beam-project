@@ -3,7 +3,7 @@ classdef studentControllerInterface < matlab.System
         %% You can add values that you want to store and updae while running your controller.
         % For more information of the supported data type, see
         % https://www.mathworks.com/help/simulink/ug/data-types-supported-by-simulink.html
-        t_prev = 0;
+        t_prev = 0 ;
         theta_d = 0;
         V_prev = 0;
         x_obs= [-0.19; 0.00; 0; 0];
