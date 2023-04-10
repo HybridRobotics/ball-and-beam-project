@@ -12,7 +12,7 @@ classdef studentControllerInterface < matlab.System
         %    disp("You can use this function for initializaition.");
         % end
 
-        function dx = ball_and_beam_observer(t, x_observer, u)
+        function dx = ball_and_beam_observer(obj, t, x_observer, u)
             p_ball = x_observer(1);
             v_ball = x_observer(2);
             theta = x_observer(3);
@@ -79,14 +79,28 @@ classdef studentControllerInterface < matlab.System
             
             %Extract the x_2 and x_4 from the observer 
             [t_obs_t, x_obs_t] = ode45( ...
-            @(t, x) obj.ball_and_beam_observer(t, x, obj.theta_d), ...
-            [max(obj.t_prev,0), t+1e-8], obj.x_obs);
+            @(t, x) ball_and_beam_observer(obj, t, x, obj.theta_d), ...
+            [max(t_prev,0), t+1e-8], obj.x_obs);
 
             
             obj.x_obs = x_obs_t(end, :)';
 
             v_ball = obj.x_obs(2);
             dtheta = obj.x_obs(4);
+            
+
+            g = 9.81;
+            r_arm = 0.0254;
+            L = 0.4255;
+            K = 1.5;
+            tau = 0.025;
+            
+            a = 5 * g * r_arm / (7 * L);
+            b = (5 * L / 14) * (r_arm / L)^2;
+            c = (5 / 7) * (r_arm / L)^2;
+
+            alpha = (5/7)*g*r_arm/L;
+            beta = (5/7)*(r_arm/L)^2;
 
             p_ball_ref = p_ball_ref-L/2;
             p_ball = p_ball-L/2;
@@ -96,8 +110,9 @@ classdef studentControllerInterface < matlab.System
             dxi = [p_ball,v_ball,alpha*sin(theta)+beta*p_ball*dtheta^2*cos(theta),alpha*dtheta*cos(theta)];
             e = dxi - [p_ball_ref,v_ball_ref,a_ball_ref,j_ball_ref];
 
-            u = -(alpha*dtheta*sin(theta)-s_ball_ref)/(alpha*cos(theta))-k'*e;
+            u = -(alpha*dtheta*sin(theta)-s_ball_ref)/(alpha*cos(theta))-k*e';
             V_servo = (u*tau+dtheta)/K;
+            display(V_servo);
 % 
 %             A_t = zeros(4);
 %             B_t = [0; 0; 0; K/tau];
