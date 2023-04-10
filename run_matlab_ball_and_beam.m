@@ -32,6 +32,7 @@ ref_vs = v_ball_ref;
 
 % Initialize state & time.
 x = x0;
+x_obs_s = x0;
 t = t0;
 end_simulation = false;
 %% Run simulation.
@@ -40,14 +41,15 @@ tstart = tic;
 while ~end_simulation
     %% Determine control input.
     tstart = tic; % DEBUG    
-    [u, theta_d] = controller_handle.stepController(t, x(1), x(3));
+    [u, theta_d, x_obs] = controller_handle.stepController(t, x(1), x(3));
     u = min(u, u_saturation);
     u = max(u, -u_saturation);
     if verbose
         print_log(t, x, u);    
     end
     tend = toc(tstart);    
-    us = [us, u];          
+    us = [us, u]; 
+    x_obs_s = [x_obs_s, x_obs]; 
     theta_ds = [theta_ds, theta_d];
     %% Run simulation for one time step.
     t_end_t = min(t + dt, t0+T);
@@ -84,6 +86,7 @@ score = get_controller_score(ts, ps, thetas, ref_ps, us);
 %% Plots
 % Plot states.
 plot_states(ts, xs, ref_ps, ref_vs, theta_ds);
+plot_observer(ts, xs, x_obs_s, ref_ps, ref_vs, theta_ds);
 % Plot output errors.
 plot_tracking_errors(ts, ps, ref_ps);        
 % Plot control input history.
