@@ -43,10 +43,10 @@ classdef studentControllerInterface < matlab.System
             phi = [phi_1; phi_2];
             
             p_1 = [-1 , -2]; % poles for K_1
-            K_2 = place(A', C', p)' ;
+            K_1 = place(A', C', p_1)' ;
             
             p_2 = [-1 , -2]; % poles for K_2
-            K_2 = place(F', H', p)' ;
+            K_2 = place(F', H', p_2)' ;
              
             % dynamics
             dx = zeros(4, 1);
@@ -73,23 +73,31 @@ classdef studentControllerInterface < matlab.System
             t_prev = obj.t_prev;
             % Extract reference trajectory at the current timestep.
             [p_ball_ref, v_ball_ref, a_ball_ref] = get_ref_traj(t);
+            omega = 2 * pi / 10;
+            j_ball_ref = - 0.04 * omega^3 * cos(omega * t);
+            s_ball_ref = 0.04 * omega^4 * sin(omega * t);
             
             %Extract the x_2 and x_4 from the observer 
             [t_obs_t, x_obs_t] = ode45( ...
-            @(t, x) ball_and_beam_observer(t, x, obj.theta_d), ...
-            [max(obj.t_prev,0), t], obj.x_obs);
+            @(t, x) obj.ball_and_beam_observer(t, x, obj.theta_d), ...
+            [max(obj.t_prev,0), t+1e-8], obj.x_obs);
 
             
             obj.x_obs = x_obs_t(end, :)';
 
             v_ball = obj.x_obs(2);
             dtheta = obj.x_obs(4);
-            
-%             K = 1.5;
-%             tau = 0.025;
-%             a = 5 * g * r_arm / (7 * L);
-%             b = (5 * L / 14) * (r_arm / L)^2;
-%             c = (5 / 7) * (r_arm / L)^2;
+
+            p_ball_ref = p_ball_ref-L/2;
+            p_ball = p_ball-L/2;
+
+            k = [1 4 6 4];
+
+            dxi = [p_ball,v_ball,alpha*sin(theta)+beta*p_ball*dtheta^2*cos(theta),alpha*dtheta*cos(theta)];
+            e = dxi - [p_ball_ref,v_ball_ref,a_ball_ref,j_ball_ref];
+
+            u = -(alpha*dtheta*sin(theta)-s_ball_ref)/(alpha*cos(theta))-k'*e;
+            V_servo = (u*tau+dtheta)/K;
 % 
 %             A_t = zeros(4);
 %             B_t = [0; 0; 0; K/tau];
