@@ -79,7 +79,7 @@ classdef studentControllerInterface < matlab.System
             % Control law
             xi = [p_ball, v_ball, obj.alpha*sin(theta), obj.alpha*dtheta*cos(theta)];
             e = [p_ball_ref, v_ball_ref, a_ball_ref, j_ball_ref] - xi;
-            k = [10 31 33 13];
+            k = [16 32 24 8];
             obj.u = (obj.alpha*dtheta*sin(theta)+s_ball_ref+k*e')/(obj.alpha*cos(theta));
 
             % Change of variables
