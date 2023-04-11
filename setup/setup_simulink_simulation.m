@@ -9,8 +9,8 @@ clear;
 %
 %% Calculate Control Parameters
 % Load model parameters based on servo configuration.    
-K = 10; % enter correct value
-tau = 0.1; % enter correct value
+K = 1.5; % enter correct value
+tau = 0.025; % enter correct value
 K_bb = 0.82;
 
 
