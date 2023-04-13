@@ -27,6 +27,7 @@ classdef studentControllerInterface < matlab.System
         a_ball_ref_prev = 0;
         j_ball_ref_prev = 0;
         x_obs = [-0.19 0 0 0]';
+        max_angle = false;
 
         % To be initialized
         alpha
@@ -79,8 +80,17 @@ classdef studentControllerInterface < matlab.System
             % Control law
             xi = [p_ball, v_ball, obj.alpha*sin(theta), obj.alpha*dtheta*cos(theta)];
             e = [p_ball_ref, v_ball_ref, a_ball_ref, j_ball_ref] - xi;
-            k = [16 32 24 8];
-            obj.u = (obj.alpha*dtheta*sin(theta)+s_ball_ref+k*e')/(obj.alpha*cos(theta));
+            b = [1 1];
+            k = flip(conv(b,conv(b,conv(b,b))));
+            k = k(1:4);
+            obj.u = (obj.alpha*dtheta^2*sin(theta)+s_ball_ref+k*e')/(obj.alpha*cos(theta));
+
+            % Safety Catch
+            if theta-pi/3 > 0
+                obj.u = min(obj.u, -dtheta/delta_t);
+            elseif theta+pi/3 < 0
+                obj.u = max(obj.u, -dtheta/delta_t);
+            end
 
             % Change of variables
             V_servo = (obj.u*obj.tau+dtheta)/obj.K;
