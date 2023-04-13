@@ -27,7 +27,7 @@ classdef studentControllerInterface < matlab.System
         a_ball_ref_prev = 0;
         j_ball_ref_prev = 0;
         x_obs = [-0.19 0 0 0]';
-        max_angle = false;
+        V = 0;
 
         % To be initialized
         alpha
@@ -52,6 +52,11 @@ classdef studentControllerInterface < matlab.System
         % Output:
         %   V_servo: voltage to the servo input.        
             %% Sample Controller: Simple Proportional Controller
+            
+            if t == obj.t_prev
+                V_servo = obj.V;
+                return
+            end
 
             % Time step
             delta_t = t-obj.t_prev;
@@ -80,15 +85,15 @@ classdef studentControllerInterface < matlab.System
             % Control law
             xi = [p_ball, v_ball, obj.alpha*sin(theta), obj.alpha*dtheta*cos(theta)];
             e = [p_ball_ref, v_ball_ref, a_ball_ref, j_ball_ref] - xi;
-            b = [1 1];
+            b = [1 4];
             k = flip(conv(b,conv(b,conv(b,b))));
             k = k(1:4);
             obj.u = (obj.alpha*dtheta^2*sin(theta)+s_ball_ref+k*e')/(obj.alpha*cos(theta));
 
             % Safety Catch
-            if theta-pi/3 > 0
+            if theta > pi/3
                 obj.u = min(obj.u, -dtheta/delta_t);
-            elseif theta+pi/3 < 0
+            elseif theta < -pi/3
                 obj.u = max(obj.u, -dtheta/delta_t);
             end
 
@@ -99,6 +104,7 @@ classdef studentControllerInterface < matlab.System
             obj.t_prev = t;
             obj.a_ball_ref_prev = a_ball_ref;
             obj.j_ball_ref_prev = j_ball_ref;
+            obj.V = V_servo;
         end
     end
     
